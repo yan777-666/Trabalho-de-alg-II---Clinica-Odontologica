@@ -8,4 +8,6 @@ typedef struct {
     char telefone[20];
 } Paciente;
 
+void listarPacientes(Paciente pacientes[], int quantidade);
+
 #endif
