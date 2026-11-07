@@ -20,8 +20,8 @@ void cadastrarPaciente(
     int capacidade
 );
 
-void listarPacientes(
-    const Paciente pacientes[],
+void listarPacientes( 
+    Paciente pacientes[],
     int quantidade
 );
 
