@@ -8,6 +8,31 @@ typedef struct {
     char telefone[20];
 } Paciente;
 
-void listarPacientes(Paciente pacientes[], int quantidade);
+int buscarPacientePorCPF(
+    const Paciente pacientes[],
+    int quantidade,
+    const char cpf[]
+);
+
+void cadastrarPaciente(
+    Paciente pacientes[],
+    int *quantidade,
+    int capacidade
+);
+
+void listarPacientes(
+    const Paciente pacientes[],
+    int quantidade
+);
+
+void atualizarPaciente(
+    Paciente pacientes[],
+    int quantidade
+);
+
+void excluirPaciente(
+    Paciente pacientes[],
+    int *quantidade
+);
 
 #endif
