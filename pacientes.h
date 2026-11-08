@@ -1,38 +1,16 @@
 #ifndef PACIENTES_H
 #define PACIENTES_H
 
-typedef struct {
-    char cpf[15];
-    char nome[100];
-    char dataNascimento[11];
-    char telefone[20];
-} Paciente;
+#include "structs.h"
 
-int buscarPacientePorCPF(
-    const Paciente pacientes[],
-    int quantidade,
-    const char cpf[]
-);
+int buscarPaciente(Paciente pacientes[], int quantidade, char cpf[]);
 
-void cadastrarPaciente(
-    Paciente pacientes[],
-    int *quantidade,
-    int capacidade
-);
+void cadastrarPaciente(Paciente pacientes[], int *quantidade, int capacidade);
 
-void listarPacientes( 
-    Paciente pacientes[],
-    int quantidade
-);
+void listarPacientes(Paciente pacientes[], int quantidade);
 
-void atualizarPaciente(
-    Paciente pacientes[],
-    int quantidade
-);
+void atualizarPaciente(Paciente pacientes[], int quantidade);
 
-void excluirPaciente(
-    Paciente pacientes[],
-    int *quantidade
-);
+void excluirPaciente(Paciente pacientes[], int *quantidade);
 
 #endif
