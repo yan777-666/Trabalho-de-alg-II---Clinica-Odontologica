@@ -17,7 +17,10 @@ typedef struct {
 
 typedef struct {
     int idConsulta;
+    char cpfPaciente[15];
     int croDentista;
+    char dataConsulta[11];
+    char horario[6];
 } Consulta;
 
 #endif
