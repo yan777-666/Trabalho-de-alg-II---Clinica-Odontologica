@@ -1,187 +1,183 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "dentistas.h"
 
-
-static void limparBuffer(void) {
+void limparBuffer(void) {
     int c;
+
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+void removerQuebraLinha(char str[]) {
+    int tamanho = strlen(str);
 
-static void removerQuebraLinha(char *str) {
-    size_t len = strlen(str);
-    if (len > 0 && str[len - 1] == '\n') {
-        str[len - 1] = '\0';
+    if (tamanho > 0 && str[tamanho - 1] == '\n') {
+        str[tamanho - 1] = '\0';
     }
 }
 
-int buscarDentistaCRO(const Dentista *dentistas, int qtd, int cro) {
-    if (dentistas == NULL || qtd <= 0) {
-        return -1;
-    }
+int buscarDentistaCRO(Dentista dentistas[], int qtd, int cro) {
+    int i;
 
-    for (int i = 0; i < qtd; i++) {
+    for (i = 0; i < qtd; i++) {
         if (dentistas[i].cro == cro) {
             return i;
         }
     }
+
     return -1;
 }
 
-int cadastrarDentista(Dentista **dentistas, int *qtd, int *capacidade, int (*garantirCap)(Dentista**, int*, int)) {
-    if (dentistas == NULL || qtd == NULL || capacidade == NULL) {
+int cadastrarDentista(Dentista dentistas[], int *qtd, int capacidade) {
+    Dentista novo;
+    int cro;
+
+    if (*qtd >= capacidade) {
+        printf("\nLimite de dentistas atingido!\n");
         return 0;
     }
 
-    
-    if (garantirCap != NULL) {
-        if (!garantirCap(dentistas, qtd, *capacidade)) {
-            printf("Erro ao alocar memoria para cadastrar dentista.\n");
-            return 0;
-        }
-    }
-
-    int cro;
     printf("\n--- Cadastrar Dentista ---\n");
+
     printf("Digite o CRO: ");
+
     if (scanf("%d", &cro) != 1) {
-        printf("CRO invalido.\n");
+        printf("CRO invalido!\n");
         limparBuffer();
         return 0;
     }
+
     limparBuffer();
 
-    if (buscarDentistaCRO(*dentistas, *qtd, cro) != -1) {
-        printf("Erro: Dentista com o CRO %d ja cadastrado.\n", cro);
+    if (buscarDentistaCRO(dentistas, *qtd, cro) != -1) {
+        printf("Dentista com esse CRO ja cadastrado!\n");
         return 0;
     }
 
-    Dentista novo;
     novo.cro = cro;
 
     printf("Nome: ");
-    if (fgets(novo.nome, sizeof(novo.nome), stdin) != NULL) {
-        removerQuebraLinha(novo.nome);
-    }
+    fgets(novo.nome, sizeof(novo.nome), stdin);
+    removerQuebraLinha(novo.nome);
 
     printf("Especialidade: ");
-    if (fgets(novo.especialidade, sizeof(novo.especialidade), stdin) != NULL) {
-        removerQuebraLinha(novo.especialidade);
-    }
+    fgets(novo.especialidade, sizeof(novo.especialidade), stdin);
+    removerQuebraLinha(novo.especialidade);
 
     printf("Telefone: ");
-    if (fgets(novo.telefone, sizeof(novo.telefone), stdin) != NULL) {
-        removerQuebraLinha(novo.telefone);
-    }
+    fgets(novo.telefone, sizeof(novo.telefone), stdin);
+    removerQuebraLinha(novo.telefone);
 
-    (*dentistas)[*qtd] = novo;
+    dentistas[*qtd] = novo;
+
     (*qtd)++;
 
-    printf("Dentista cadastrado com sucesso!\n");
+    printf("\nDentista cadastrado com sucesso!\n");
+
     return 1;
 }
 
-void alterarDentista(Dentista *dentistas, int qtd) {
-    if (dentistas == NULL || qtd == 0) {
-        printf("Nenhum dentista cadastrado.\n");
+void alterarDentista(Dentista dentistas[], int qtd) {
+    int cro;
+    int indice;
+
+    if (qtd == 0) {
+        printf("\nNenhum dentista cadastrado!\n");
         return;
     }
 
-    int cro;
     printf("\n--- Alterar Dentista ---\n");
-    printf("Digite o CRO do dentista a ser alterado: ");
+    printf("Digite o CRO do dentista: ");
+
     if (scanf("%d", &cro) != 1) {
-        printf("Entrada invalida.\n");
+        printf("Entrada invalida!\n");
         limparBuffer();
         return;
     }
+
     limparBuffer();
 
-    int idx = buscarDentistaCRO(dentistas, qtd, cro);
-    if (idx == -1) {
-        printf("Dentista com CRO %d nao encontrado.\n", cro);
+    indice = buscarDentistaCRO(dentistas, qtd, cro);
+
+    if (indice == -1) {
+        printf("\nDentista nao encontrado!\n");
         return;
     }
 
-    printf("Dados atuais: Nome: %s | Especialidade: %s | Telefone: %s\n",
-           dentistas[idx].nome, dentistas[idx].especialidade, dentistas[idx].telefone);
+    printf("\nNovo nome: ");
+    fgets(dentistas[indice].nome, sizeof(dentistas[indice].nome), stdin);
+    removerQuebraLinha(dentistas[indice].nome);
 
-    printf("\nDigite os novos dados:\n");
-    printf("Novo Nome: ");
-    if (fgets(dentistas[idx].nome, sizeof(dentistas[idx].nome), stdin) != NULL) {
-        removerQuebraLinha(dentistas[idx].nome);
-    }
+    printf("Nova especialidade: ");
+    fgets(dentistas[indice].especialidade, sizeof(dentistas[indice].especialidade), stdin);
+    removerQuebraLinha(dentistas[indice].especialidade);
 
-    printf("Nova Especialidade: ");
-    if (fgets(dentistas[idx].especialidade, sizeof(dentistas[idx].especialidade), stdin) != NULL) {
-        removerQuebraLinha(dentistas[idx].especialidade);
-    }
+    printf("Novo telefone: ");
+    fgets(dentistas[indice].telefone, sizeof(dentistas[indice].telefone), stdin);
+    removerQuebraLinha(dentistas[indice].telefone);
 
-    printf("Novo Telefone: ");
-    if (fgets(dentistas[idx].telefone, sizeof(dentistas[idx].telefone), stdin) != NULL) {
-        removerQuebraLinha(dentistas[idx].telefone);
-    }
-
-    printf("Cadastro do dentista atualizado com sucesso!\n");
+    printf("\nDentista atualizado com sucesso!\n");
 }
 
+void removerDentista(Dentista dentistas[], int *qtd, Consulta consultas[], int qtdConsultas) {
+    int cro;
+    int indice;
+    int i;
 
-void removerDentista(Dentista **dentistas, int *qtd, const Consulta *consultas, int qtdConsultas) {
-    if (dentistas == NULL || *dentistas == NULL || qtd == NULL || *qtd == 0) {
-        printf("Nenhum dentista cadastrado.\n");
+    if (*qtd == 0) {
+        printf("\nNenhum dentista cadastrado!\n");
         return;
     }
 
-    int cro;
     printf("\n--- Remover Dentista ---\n");
-    printf("Digite o CRO do dentista a remover: ");
+    printf("Digite o CRO do dentista: ");
+
     if (scanf("%d", &cro) != 1) {
-        printf("Entrada invalida.\n");
+        printf("Entrada invalida!\n");
         limparBuffer();
         return;
     }
+
     limparBuffer();
 
-    int idx = buscarDentistaCRO(*dentistas, *qtd, cro);
-    if (idx == -1) {
-        printf("Dentista com CRO %d nao encontrado.\n", cro);
+    indice = buscarDentistaCRO(dentistas, *qtd, cro);
+
+    if (indice == -1) {
+        printf("\nDentista nao encontrado!\n");
         return;
     }
 
-    
-    if (consultas != NULL && qtdConsultas > 0) {
-        for (int i = 0; i < qtdConsultas; i++) {
-            if (consultas[i].croDentista == cro) {
-                printf("Erro: O dentista nao pode ser removido pois possui consulta vinculada (ID Consulta: %d).\n", 
-                       consultas[i].idConsulta);
-                return;
-            }
+    for (i = 0; i < qtdConsultas; i++) {
+        if (consultas[i].croDentista == cro) {
+            printf("\nDentista possui consulta vinculada e nao pode ser removido!\n");
+            return;
         }
     }
 
-    
-    for (int i = idx; i < (*qtd) - 1; i++) {
-        (*dentistas)[i] = (*dentistas)[i + 1];
+    for (i = indice; i < *qtd - 1; i++) {
+        dentistas[i] = dentistas[i + 1];
     }
+
     (*qtd)--;
 
-    printf("Dentista removido com sucesso!\n");
+    printf("\nDentista removido com sucesso!\n");
 }
 
+void listarDentistas(Dentista dentistas[], int qtd) {
+    int i;
 
-void listarDentistas(const Dentista *dentistas, int qtd) {
-    printf("\n================ LISTA DE DENTISTAS ================\n");
-    if (dentistas == NULL || qtd == 0) {
-        printf("Nenhum dentista cadastrado.\n");
-        printf("====================================================\n");
+    if (qtd == 0) {
+        printf("\nNenhum dentista cadastrado!\n");
         return;
     }
 
-    for (int i = 0; i < qtd; i++) {
-        printf("[%d] CRO: %d | Nome: %s | Especialidade: %s | Tel: %s\n",
-               i + 1, dentistas[i].cro, dentistas[i].nome, dentistas[i].especialidade, dentistas[i].telefone);
+    printf("\n--- LISTA DE DENTISTAS ---\n");
+
+    for (i = 0; i < qtd; i++) {
+        printf("\nDentista %d\n", i + 1);
+        printf("CRO: %d\n", dentistas[i].cro);
+        printf("Nome: %s\n", dentistas[i].nome);
+        printf("Especialidade: %s\n", dentistas[i].especialidade);
+        printf("Telefone: %s\n", dentistas[i].telefone);
     }
-    printf("====================================================\n");
 }
